@@ -5,7 +5,7 @@ load_dotenv()
 # ========================================
 # Hugging Face Qwen2.5-VL 모델 설정
 # ========================================
-HF_MODEL_NAME = os.getenv("HF_MODEL_NAME", "Qwen/Qwen2.5-VL-7B-Instruct")
+HF_MODEL_NAME = os.getenv("HF_MODEL_NAME", "Qwen/Qwen2.5-VL-3B-Instruct")
 HF_DEVICE = os.getenv("HF_DEVICE", "cuda")  # "cuda" 또는 "cpu"
 HF_TORCH_DTYPE = os.getenv("HF_TORCH_DTYPE", "float16")
 

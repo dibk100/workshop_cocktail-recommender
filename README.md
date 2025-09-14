@@ -36,7 +36,7 @@ watch -n 1 nvidia-smi
 
 ## 📌 Notes & Issues (update.2025-09-15) 🧷
 - neo4j 미연결
-- LLM(1), LLM(2) : Qwen/Qwen2.5-VL-7B-Instruct
+- LLM(1), LLM(2) : Qwen/Qwen2.5-VL-3B-Instruct
 - 현재 llm_response.py와 graph_nodes.py는 더미 형태로 구현 
 - llm(1) 프롬프트를 json형태로 출력하도록 함.
 
