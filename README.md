@@ -30,7 +30,6 @@ rm -rf ~/.cache/huggingface/transformers
 # GPU모니터링
 watch -n 1 nvidia-smi
 ```
-
 </details>
 
 
@@ -39,23 +38,6 @@ watch -n 1 nvidia-smi
 - LLM(1), LLM(2) : Qwen/Qwen2.5-VL-3B-Instruct
 - 현재 llm_response.py와 graph_nodes.py는 더미 형태로 구현 
 - llm(1) 프롬프트를 json형태로 출력하도록 함.
-
-## ⚙️ LangGraph 파이프라인 설계
-```
-[User Input] 
-      │
-      ▼
- [LLM(1) Node] ──> 속성 추출 & Graph Query
-      │
-      ▼
- [Graph Query Node] ──> Neo4j에서 후보 칵테일 조회
-      │
-      ▼
- [LLM(2) Node] ──> 최종 추천 텍스트 생성
-      │
-      ▼
- [Response Node] ──> 사용자 출력
-```
 
 ## 📁 Folder Structure
 ```
@@ -80,5 +62,32 @@ project_root/
 │   ├─ test_graph_nodes.py
 │   └─ test_pipeline.py       # 예시 질의 3개 테스트
 │
+├─ graph_viz/                     # 시각화
+│   ├─ visualize_pipeline.ipynb
+│   └─ mermaid_code.mmd       
+│
 └─ requirements.txt
 ```
+
+## ⚙️ LangGraph 파이프라인 설계
+![파이프라인 구조](graph_viz/mermaid_code.png)
+<details> <summary> 구조 </summary>
+flow
+
+```
+[User Input] 
+      │
+      ▼
+ [LLM(1) Node] ──> 속성 추출 & Graph Query
+      │
+      ▼
+ [Graph Query Node] ──> Neo4j에서 후보 칵테일 조회
+      │
+      ▼
+ [LLM(2) Node] ──> 최종 추천 텍스트 생성
+      │
+      ▼
+ [Response Node] ──> 사용자 출력
+```
+</details>
+

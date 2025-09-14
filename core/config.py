@@ -21,3 +21,5 @@ HF_TORCH_DTYPE = os.getenv("HF_TORCH_DTYPE", "float16")
 # 기타 설정
 # ========================================
 MAX_GENERATION_LENGTH = int(os.getenv("MAX_GENERATION_LENGTH", 256))
+
+DEBUG: bool = True   # 개발 중엔 True, 운영 시 False

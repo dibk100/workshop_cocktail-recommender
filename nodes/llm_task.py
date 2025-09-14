@@ -12,11 +12,11 @@ def llm_task_node(state: PipelineState) -> PipelineState:
     - 출력 JSON을 파싱하여 PipelineState에 저장
     """
 
-    user_query = state.query                        # 입력된 질문
+    user_query = state.input_text                        # 입력된 질문
     prompt = get_task_prompt(user_query)            # llm(1) 프롬프트 
     
     try:
-        raw_output = qwen_model.generate(prompt,max_length=256)        # 모델 결과
+        raw_output = qwen_model.generate(prompt,max_length=256)        # temperature=0.7,top_p=0.9 조절 가능?
         
         #### 확인용
         # print(f"\n#############\n[LLM(1)] output :\n{raw_output}\n#############\n\n")        # 프롬프트와 출력값 같이 확인

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
 
 class PipelineState(BaseModel):
@@ -8,13 +8,13 @@ class PipelineState(BaseModel):
     # -------------------
     # 사용자 입력
     # -------------------
-    query: str
+    input_text: str
 
     # -------------------
     # LLM1 결과
     # -------------------
     task_type: Optional[str] = None           # Recommend / Description / Classification
-    attributes: Optional[Dict[str, Any]] = {} # taste, alcohol_level, ingredients 등
+    attributes: Optional[Dict[str, Any]] = Field(default_factory=dict)  # taste, alcohol_level, ingredients 등
     graph_query: Optional[str] = None         # Graph Query 준비 정보
 
     # -------------------

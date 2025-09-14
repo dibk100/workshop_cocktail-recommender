@@ -3,7 +3,8 @@ import os
 
 # tests폴더에서 실행하며 발생한 이슈
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from pipeline import run_pipeline
+from pipeline import build_pipeline_graph
+from core.schemas import PipelineState
 
 """
 질문 3개 테스트하는 공간
@@ -24,8 +25,11 @@ def print_menu():
     print("=================================")
 
 def main():
+    # LangGraph 파이프라인 빌드
+    graph = build_pipeline_graph().compile()
+
     while True:
-        print("\n=== TEST Interface🍸 Cocktail Recommendation System 🍸 ===\n")
+        print("\n=== TEST Interface 🍸 Cocktail Recommendation System 🍸 ===\n")
         print_menu()
         choice = input("선택 (번호 또는 종료 'q'): ").strip()
 
@@ -42,13 +46,13 @@ def main():
             continue
 
         try:
-            response = run_pipeline(user_query)
-            if not response:
-                print("응답 생성 실패. 프로그램을 종료합니다.")
-                break
-
+            # LangGraph 실행
+            state = PipelineState(input_text=user_query)
+            final_state = graph.invoke(state)           # dict반환 ## {input_text, task_type, attributes,,,,final_text}
+            
             print("\n=== 최종 응답 ===")
-            print(response)
+            # print(final_state)
+            print(final_state['final_text'])
             print("\n" + "-"*50 + "\n")
 
         except Exception as e:

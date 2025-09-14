@@ -14,7 +14,7 @@ def llm_response_node(state: PipelineState) -> PipelineState:
 
     # Respones 프롬프트
     prompt = RESPONSE_PROMPT.format(
-        query=state.query,                      # 질문
+        query=state.input_text,                      # 질문
         attributes=state.attributes,            # 속성
         search_results=graph_results_str        # 후보 결과
     )

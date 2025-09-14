@@ -1,0 +1,15 @@
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	LLM1(LLM1)
+	GraphQuery(GraphQuery)
+	LLM2(LLM2)
+	ResponseFormatter(ResponseFormatter)
+	__end__([<p>__end__</p>]):::last
+	GraphQuery --> LLM2;
+	LLM1 --> GraphQuery;
+	LLM2 --> ResponseFormatter;
+	__start__ --> LLM1;
+	ResponseFormatter --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
