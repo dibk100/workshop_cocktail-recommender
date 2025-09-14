@@ -70,7 +70,7 @@ project_root/
 ```
 
 ## ⚙️ LangGraph 파이프라인 설계
-![파이프라인 구조](graph_viz/mermaid_code.png)
+![파이프라인 구조](graph_viz/mermaid_code_white.png)
 <details> <summary> 구조 </summary>
 flow
 
