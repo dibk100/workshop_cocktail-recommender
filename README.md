@@ -3,7 +3,7 @@
 - Neo4j 기반 그래프 DB(GraphRAG) 구축
 - LangGraph를 활용한 파이프라인 설계
 
-## 🚀 Getting Started
+## 🚀 Getting Started 
 ### 1. 가상환경 생성(권장) & 패키지 설치
 ```
 /workshop_cocktail-recommender$ conda create -n workshop_311 python=3.11
