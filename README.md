@@ -32,6 +32,12 @@ watch -n 1 nvidia-smi
 ```
 </details>
 
+### 3. Git Branch
+
+```
+git checkout -b [브랜치명]
+git fetch
+```
 
 ## 📌 Notes & Issues (update.2025-09-15) 🧷
 - neo4j 미연결
