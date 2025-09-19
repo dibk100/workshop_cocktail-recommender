@@ -1,27 +1,34 @@
 from langgraph.graph import StateGraph, START, END
-from nodes.llm_task import llm_task_node
+from nodes.task_classifier import *
 from nodes.graph_nodes import graph_query_node
 from nodes.llm_response import llm_response_node
 from nodes.response_node import response_node
 from core.schemas import PipelineState
 
 def build_pipeline_graph() -> StateGraph:
-    """
-    LangGraph 기반 파이프라인 구축
-    user_input -> llm_task_node -> graph_query_node -> llm_response_node -> response_node
-    """
     graph = StateGraph(PipelineState)
-    graph.add_node("LLM1", llm_task_node)
-    graph.add_node("GraphQuery", graph_query_node)
-    graph.add_node("LLM2", llm_response_node)
+    
+    graph.add_node("TASK_mapping", task_mapping_node)
+    graph.add_node("Agent_TaskClassification", llm_task_node)
+    graph.add_node("Retriver", graph_query_node)
+    graph.add_node("Agent_CheckingHop", llm_response_node)
     graph.add_node("ResponseFormatter", response_node)
     
-    graph.add_edge(START, "LLM1")
-    graph.add_edge("LLM1", "GraphQuery")
-    graph.add_edge("GraphQuery", "LLM2")
-    graph.add_edge("LLM2", "ResponseFormatter")
+    # 기본 플로우
+    graph.add_edge(START, "TASK_mapping")
+    graph.add_edge("TASK_mapping", "Agent_TaskClassification")
+    graph.add_edge("Agent_TaskClassification", "Retriver")
+    
+    # Retriever ↔ CheckingHop 루프
+    graph.add_edge("Retriver", "Agent_CheckingHop")
+    graph.add_edge("Agent_CheckingHop", "Retriver")   # 루프 추가
+    
+    # 결과 출력
+    graph.add_edge("Retriver", "ResponseFormatter")
     graph.add_edge("ResponseFormatter", END)
+    
     return graph
+
 
 def interface_cli():
     """
