@@ -1,15 +1,18 @@
 graph TD;
 	__start__([<p>__start__</p>]):::first
-	LLM1(LLM1)
-	GraphQuery(GraphQuery)
-	LLM2(LLM2)
+	TASK_mapping(TASK_mapping)
+	Agent_TaskClassification(Agent_TaskClassification)
+	Retriver(Retriver)
+	Agent_CheckingHop(Agent_CheckingHop)
 	ResponseFormatter(ResponseFormatter)
 	__end__([<p>__end__</p>]):::last
-	GraphQuery --> LLM2;
-	LLM1 --> GraphQuery;
-	LLM2 --> ResponseFormatter;
-	__start__ --> LLM1;
+	Agent_CheckingHop --> Retriver;
+	Agent_TaskClassification --> Retriver;
+	Retriver --> Agent_CheckingHop;
+	Retriver --> ResponseFormatter;
+	TASK_mapping --> Agent_TaskClassification;
+	__start__ --> TASK_mapping;
 	ResponseFormatter --> __end__;
-	classDef default fill:#f2f0ff,line-height:1.2
+	classDef default fill:#f2f0ff,line-height:1.2`
 	classDef first fill-opacity:0
 	classDef last fill:#bfb6fc
