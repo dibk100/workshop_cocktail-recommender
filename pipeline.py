@@ -1,34 +1,44 @@
 from langgraph.graph import StateGraph, START, END
 from nodes.task_classifier import *
-from nodes.graph_nodes import graph_query_node
-from nodes.llm_response import llm_response_node
-from nodes.response_node import response_node
+from nodes.retriever import *
+from nodes.checking_hop import *
+from nodes.generator import *
 from core.schemas import PipelineState
+
 
 def build_pipeline_graph() -> StateGraph:
     graph = StateGraph(PipelineState)
     
-    graph.add_node("TASK_mapping", task_mapping_node)
-    graph.add_node("Agent_TaskClassification", llm_task_node)
-    graph.add_node("Retriver", graph_query_node)
-    graph.add_node("Agent_CheckingHop", llm_response_node)
-    graph.add_node("ResponseFormatter", response_node)
+    # 노드 정의
+    graph.add_node("Agent_TaskClassification", task_mapping_node)
+    graph.add_node("Retriever", graph_query_node)
+    graph.add_node("Checking_Hop", checking)
+    graph.add_node("Generator", response_node)
     
-    # 기본 플로우
-    graph.add_edge(START, "TASK_mapping")
-    graph.add_edge("TASK_mapping", "Agent_TaskClassification")
-    graph.add_edge("Agent_TaskClassification", "Retriver")
+    # 기본 플로우: 실선 연결
+    graph.add_edge(START, "Agent_TaskClassification")
+    graph.add_edge("Agent_TaskClassification", "Retriever")
+    graph.add_edge("Retriever", "Checking_Hop")  # 실선
+    graph.add_edge("Checking_Hop", "Generator")  # 실선
     
-    # Retriever ↔ CheckingHop 루프
-    graph.add_edge("Retriver", "Agent_CheckingHop")
-    graph.add_edge("Agent_CheckingHop", "Retriver")   # 루프 추가
+    # 조건부 분기:
+    def checking_hop_condition(state: PipelineState) -> str:
+        score = state.score if state.score is not None else 85
+        return "score >= 80" if score >= 80 else "score < 80"
     
-    # 결과 출력
-    graph.add_edge("Retriver", "ResponseFormatter")
-    graph.add_edge("ResponseFormatter", END)
+    graph.add_conditional_edges(
+        "Checking_Hop",
+        checking_hop_condition,
+        {
+            "score < 80": "Retriever",
+            "score >= 80": "Generator"
+        }
+    )
+    
+    # 최종 출력
+    graph.add_edge("Generator", END)
     
     return graph
-
 
 def interface_cli():
     """

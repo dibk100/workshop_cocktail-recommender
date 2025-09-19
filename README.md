@@ -52,20 +52,28 @@ project_root/
 ├─ pipeline.py                # 메인 파이프라인 정의/실행 (LangGraph EntryPoint)
 │
 ├─ nodes/                     
-│   ├─ llm_task.py            # LLM(1): 사용자 입력 태스크 분류 + GraphRAG 호출
-│   ├─ llm_response.py        # LLM(2): 최종 응답 생성 (현재는 더미)
-│   ├─ graph_nodes.py         # Neo4j Graph Query 노드 (더미)
-│   └─ response_node.py       # 최종 사용자 Response 포맷팅
+│   ├─ task_classifier.py       
+│   ├─ retriever.py        
+│   ├─ checking_hop.py         
+│   └─ generator.py       
 │
 ├─ core/                      
 │   ├─ config.py              # 환경 변수 및 설정
 │   ├─ llm_model.py           # Hugging Face Qwen2.5-VL-7B-Instruct 
-│   ├─ llm_prompts.py         # LLM 프롬프트 템플릿 작성 공간
-│   ├─ utils.py               # 
+│   ├─ promptloader.py         
+│   ├─ utils.py               
 │   └─ schemas.py             # Pydantic 기반 PipelineState 정의
 │
+├─ prompts/                      
+│   ├─ embedding_config.json              
+│   ├─ base_system.json            
+│   ├─ c1_visual_similarity.json        
+│   ├─ c2_taste_profile.json
+│   ├─ c3_classification.json
+│   ├─ c4_recipe_ingredients.json
+│   └─ task_classifier.json
+│
 ├─ tests/                     # 단위/통합 테스트
-│   ├─ test_graph_nodes.py
 │   └─ test_pipeline.py       # 예시 질의 3개 테스트
 │
 ├─ graph_viz/                     # 시각화

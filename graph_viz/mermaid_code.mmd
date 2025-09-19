@@ -1,18 +1,16 @@
 graph TD;
 	__start__([<p>__start__</p>]):::first
-	TASK_mapping(TASK_mapping)
 	Agent_TaskClassification(Agent_TaskClassification)
-	Retriver(Retriver)
-	Agent_CheckingHop(Agent_CheckingHop)
-	ResponseFormatter(ResponseFormatter)
+	Retriever(Retriever)
+	Checking_Hop(Checking_Hop)
+	Generator(Generator)
 	__end__([<p>__end__</p>]):::last
-	Agent_CheckingHop --> Retriver;
-	Agent_TaskClassification --> Retriver;
-	Retriver --> Agent_CheckingHop;
-	Retriver --> ResponseFormatter;
-	TASK_mapping --> Agent_TaskClassification;
-	__start__ --> TASK_mapping;
-	ResponseFormatter --> __end__;
-	classDef default fill:#f2f0ff,line-height:1.2`
+	Agent_TaskClassification --> Retriever;
+	Checking_Hop -. &nbsp;score >= 80&nbsp; .-> Generator;
+	Checking_Hop -. &nbsp;score < 80&nbsp; .-> Retriever;
+	Retriever --> Checking_Hop;
+	__start__ --> Agent_TaskClassification;
+	Generator --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
 	classDef first fill-opacity:0
 	classDef last fill:#bfb6fc

@@ -1,70 +1,57 @@
 from core.schemas import PipelineState
 from core.llm_model import QwenModel            ## 모델 가져옴
-from core.llm_prompts import get_task_prompt    ## 프롬프트 가져옴
-from core.utils import parse_json_from_llm,llm1_output  # utils에서 json 출력 핸들링
+from core.promptloader import PromptLoader
+from core.utils import parse_json_from_llm
+import json
 
-# 모델 불러옴
-qwen_model = QwenModel()
+# 모델 정의
+qwen_vl = QwenModel()             # task classifier용
+qwen_vl_imageTotext = QwenModel() # 이미지→텍스트 변환용
+
+# PromptLoader 초기화
+prompt_loader = PromptLoader(prompts_dir="./prompts")
 
 def task_mapping_node(state: PipelineState) -> PipelineState:
     """
-    - 태스크 유형 분류하는 노드 : 사용자 질의(이미지,text) → 태스크 분류
-    - str
+    1. 사용자 입력(user_query)을 state에 저장
+    2. Qwen-VL로 task_type 분류 및 embedding 모델 지정
+    3. 이미지 → 텍스트 변환 후 input_text와 결합
     """
+    # -----------------------------
+    # 1. 사용자 입력 저장
+    # -----------------------------
+    user_query = state.user_query
+    state.input_text = user_query.get("text", "")
+    state.input_image = user_query.get("image", None)
 
-    user_query = state.input_text                        # 입력된 질문과 이미지
-    prompt = get_task_prompt(user_query)            # llm(1) 프롬프트 
-    
-    try:
-        raw_output = qwen_model.generate(prompt,max_length=256)        # temperature=0.7,top_p=0.9 조절 가능?
-        
-        #### 확인용
-        # print(f"\n#############\n[LLM(1)] output :\n{raw_output}\n#############\n\n")        # 프롬프트와 출력값 같이 확인
-        llm1_output(raw_output)        ## LLM(1) 결과값만 출력
-        ####
-        
-        parsed = parse_json_from_llm(raw_output)
-        state.task_type = parsed.get("task_type", "Recommend")
-        state.attributes = parsed.get("attributes", {})
+    # -----------------------------
+    # 2. Task Classifier 실행
+    # -----------------------------
+    classifier_prompt = prompt_loader.get_task_classifier_prompt()
 
-    except Exception as e:
-        print(f"[llm_task_node_Warning] JSON parse failed: {e}")
-        # fallback 처리
-        state.task_type = "Recommend"
-        state.attributes = {}
+    prompt_text = f"{classifier_prompt['system_prompt']}\n\n{classifier_prompt['user_prompt']}\n\nUser Input: {state.input_text}"
+    processed_result_text = qwen_vl.generate(prompt_text, max_length=classifier_prompt.get("max_tokens", 200))
+    print("pre : ",processed_result_text)
+    processed_result = parse_json_from_llm(processed_result_text)
+    print("llm1 : ",processed_result)
 
-    # Graph Query 준비 (임시)
-    state.graph_query = "MATCH (c:Cocktail) RETURN c LIMIT 3"
+    state.task_type = processed_result.get("task", "c1")
+    # -----------------------------
+    # 2-2. task_type에 맞는 embedding 모델 지정
+    # -----------------------------
+    emb_config = prompt_loader.get_embedding_model_config(state.task_type)
+    state.embedding_model = emb_config.get("embedding_model", "text-embedding-3-small")
 
-    return state
-def task_mapping_node(state: PipelineState) -> PipelineState:
-    """
-    - 태스크 유형 분류하는 노드 : 사용자 질의(이미지,text) → 태스크 분류
-    - str
-    """
-
-    user_query = state.input_text                        # 입력된 질문과 이미지
-    prompt = get_task_prompt(user_query)            # llm(1) 프롬프트 
-    
-    try:
-        raw_output = qwen_model.generate(prompt,max_length=256)        # temperature=0.7,top_p=0.9 조절 가능?
-        
-        #### 확인용
-        # print(f"\n#############\n[LLM(1)] output :\n{raw_output}\n#############\n\n")        # 프롬프트와 출력값 같이 확인
-        llm1_output(raw_output)        ## LLM(1) 결과값만 출력
-        ####
-        
-        parsed = parse_json_from_llm(raw_output)
-        state.task_type = parsed.get("task_type", "Recommend")
-        state.attributes = parsed.get("attributes", {})
-
-    except Exception as e:
-        print(f"[llm_task_node_Warning] JSON parse failed: {e}")
-        # fallback 처리
-        state.task_type = "Recommend"
-        state.attributes = {}
-
-    # Graph Query 준비 (임시)
-    state.graph_query = "MATCH (c:Cocktail) RETURN c LIMIT 3"
+    # -----------------------------
+    # 3. 이미지 → 텍스트 변환 후 input_text와 결합
+    # -----------------------------
+    if state.input_image is not None:
+        image_prompt = prompt_loader.get_image_to_text_prompt()
+        image_prompt_text = f"{image_prompt['system_prompt']}\n\n{image_prompt['user_prompt']}"
+        image_description = qwen_vl_imageTotext.generate(image_prompt_text, max_length=image_prompt.get("max_tokens", 1000))
+        # 기존 input_text와 결합
+        state.input_text_to_image_text  = f"{state.input_text} {image_description}"
+    else:
+        state.input_text_to_image_text  = state.input_text
 
     return state
