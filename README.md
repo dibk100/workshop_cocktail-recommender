@@ -13,7 +13,7 @@
 ### 2. Test 파이프라인 실행
 처음에 LLM모델 불러오느라 시간 걸림.
 ```
-/workshop_cocktail-recommender(workshop_311)$ python tests/test_pipeline.py
+test_pipeline.ipynb
 ```
 
 <details> <summary> CODA out of memory </summary>
