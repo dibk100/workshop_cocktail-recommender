@@ -1,7 +1,9 @@
 # 🍹 WORKSHOP : cocktail-recommender
-- 칵테일 추천시스템 개발
-- Neo4j 기반 그래프 DB(GraphRAG) 구축
-- LangGraph를 활용한 파이프라인 설계
+> 본 레포지토리는 [project_ScentRAG](https://github.com/dibk100/project_ScentRAG)를 기반으로 고도화된 버전이고, workshop 최종본은 [Cocktail_Rec_AgentRAG](https://github.com/diddbwls/cocktail_rec_agentrag)에서 정리함.
+
+- Subject : GraphRAG를 활용한 에이전트 기반 검색 강화 추천 시스템 개발
+- Accepted : http://rdgenai2025.kisti.re.kr/
+- Role : LangChain 기반 파이프라인 구축
 
 ## 🚀 Getting Started 
 ### 1. 가상환경 생성(권장) & 패키지 설치
